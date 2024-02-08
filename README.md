@@ -9,7 +9,7 @@ The repository includes the EDLUT simulator, the ROS packages to perform a close
 ****
 
 
-##  Requirements
+## Requirements
 This project was developed and tested using ROS Kinetic running in Ubuntu 16. 
 Due to computational constraints the project differentiates between a controller PC running the cerebellar SNN and all control nodes, and a monitor PC running the monitoring tools. 
 The controller PC had the following characteristics: 
@@ -20,7 +20,7 @@ The controller PC had the following characteristics:
 The project assumes Baxter SDK is installed at ~/ros_ws
 
 
-##Installation
+## Installation
 In the controller PC:
 
 * Install EDLUT simulator (this step requires an NVIDIA GPU with CUDA support and CUDA installation). Open a terminal and go to EDLUT folder: 
@@ -61,7 +61,7 @@ $ catkin_make
 
 Configure an ssh connection between the controller and monitoring PCs. The configuration used in this project assumes the following IPs: Baxter 192.168.2.1; Control PC 192.168.2.2; Monitor PC 192.168.2.3
 
-##Execution
+## Execution
 * In the Controller PC:
 ```
 $ cd ros_ws
