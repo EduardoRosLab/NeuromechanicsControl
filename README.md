@@ -75,7 +75,7 @@ $ roslaunch neuromechanics_control experiment.launch
 	* Cerebello-muscular torque control
 	* PD-muscular torque control
   * Direct PD torque control
-	* Factory-default position control
+  * Factory-default position control
 
 * The cocontraction value can be changed within the launch file: Go to the parameters of the node "cocontraction_profile_publisher" and modify the value of param "cocontraction":
 ```
@@ -87,6 +87,7 @@ $ roslaunch neuromechanics_control experiment.launch
   * Robustness priority mode
   * Frontal robustness & Lateral compliance
   * Lateral robustness & Frontal compliance
+
 To change the control mode, adjust the weighted trade-off between compliance and robustness by changing the value of:
 ```
   <rosparam param="w_compliance_robustness">
