@@ -1,0 +1,27 @@
+\subsubsection usage Usage
+\verbatim
+<node name="neuromechanics_control" pkg="neuromechanics_control" type="neuromechanics_control">
+  <param name="s0_kp" type="double" value="45.0" />
+  <param name="s0_kd" type="double" value="15.0" />
+  <param name="s0_max_torque" type="double" value="12.0" />
+  <param name="s1_kp" type="double" value="50.0" />
+  <param name="s1_kd" type="double" value="5.0" />
+  <param name="s1_max_torque" type="double" value="19.5" />
+  <param name="e0_kp" type="double" value="17.0" />
+  <param name="e0_kd" type="double" value="3.0" />
+  <param name="e0_max_torque" type="double" value="3.75" />
+  <param name="e1_kp" type="double" value="50.0" />
+  <param name="e1_kd" type="double" value="4.0" />
+  <param name="e1_max_torque" type="double" value="10.5" />
+  <param name="w0_kp" type="double" value="22.0" />
+  <param name="w0_kd" type="double" value="2.5" />
+  <param name="w0_max_torque" type="double" value="3.0" />
+  <param name="w1_kp" type="double" value="27.0" />
+  <param name="w1_kd" type="double" value="3.0" />
+  <param name="w1_max_torque" type="double" value="3.75" />
+  <param name="w2_kp" type="double" value="0.0" />
+  <param name="w2_kd" type="double" value="0.0" />
+  <param name="w2_max_torque" type="double" value="0.0" />
+</node>
+\endverbatim
+

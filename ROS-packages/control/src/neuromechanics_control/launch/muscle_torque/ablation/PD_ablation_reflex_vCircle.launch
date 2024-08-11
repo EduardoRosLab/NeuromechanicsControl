@@ -1,0 +1,368 @@
+<!-- This .launch file serves to perform ablation experiments of the different
+components of the muscle model -->
+
+
+<!-- Before running this .launch set the robot position at the starting point
+of the circular trajectory running this command:
+
+rostopic pub /robot/limb/right/joint_command baxter_core_msgs/JointCommand "{mode: 1, command: [0.7398136776, 0.08227070424, 0.01257006944, 1.078753248, -0.003028392, -0.860730432, 0.0105577608], names: ['right_s0', 'right_s1', 'right_e0', 'right_e1', 'right_w0', 'right_w1', 'right_w2']}" -r 100
+
+ -->
+
+<launch>
+
+  <machine name="main_PC" address="192.168.2.2"/>
+
+<!-- GLOBAL PARAMETERS
+  -Use_sim_time:
+    False-Run in real time.
+    True-Run in simulation time.
+  -Reference_time: Initialization time. It is set up in edlut simulator node (not used in this case)-->
+<param name="use_sim_time" value="false" type="bool" />
+<param name="reference_time" value="0.0" type="double" />
+<param name="wireless_simulation" value="false" type="bool" />
+<param name="master_clock_topic" value="/clock_sync" type="str" />
+
+<!-- Launch Baxter Gazebo simulator
+  <include file="$(find gazebo_plugin)/launch/baxter_world_sync.launch">
+  </include>
+-->
+<!-- SYNCHRONIZER NODE
+When using simulation time it synchronizes all the other nodes so they all run at the sime time stamps.
+If runnning in real time the synchronizer node will shutdown after the robot has been enabled.
+  -Clock_topics: clock signals published by the other nodes for synchronization purposes
+  -Checking_frequency: rate (Hz) at which the synchronizer checks if the other nodes have finished the current time step
+  -Step_time: size (seconds) of every simulated time step -->
+<node machine="main_PC" pkg="neuromechanics_control" name="synchronizer_node" type="synchronizer_node" output="screen">
+  <param name="clock_topic" value="edlut_ros/clockConfirmation" type="str" />
+  <param name="number_of_nodes" value="8" type="int" />
+  <param name="checking_frequency" value="10000.0" type="double" />
+  <param name="step_time" value="0.002" type="double" />
+</node>
+
+<!-- ROBOT ENABLER NODE
+It enables the robot. Once done it publishes a message advertising
+the robot is ready and then the node is shutdown. -->
+<node machine="main_PC" pkg="neuromechanics_control" name="robot_enabler" type="robot_enabler_node.py" output="screen">
+  <param name="limb" value="right" type="str" />
+</node>
+
+
+<!-- TRAJECTORY FROM FILE GENERATOR NODE
+It generates a trajectory (position and velocity per joint) reading it from
+a .txt file in the format:
+  J0 J1 J2 J3 J4 ...
+  J0 J1 J2 J3 J4 ...
+  .
+  .
+  J0 J1 J2 J3 J4 ...
+Each line contains the position/velocity for each joint. Each line corresponds to
+a sample of the trajectory. One file for position, one file for velocity.
+This node reads the files and publishes the trajectory on the desired position
+and desired velocity topics. A trajectory is generated for every joint (joint_list param).
+The node also generates a control signal and avertises it (control_topic) to notify when the different learning trials start.
+Total number of trials and their length (seconds) is also specified.
+VERTICAL CIRCLE TRAJECTORY  -->
+<node machine="main_PC" pkg="neuromechanics_control" name="q_trajectory_generator" type="q_trajectory_generator_node" output="screen" clear_params="true">
+  # Define private parameters for the EDLUT simulation
+  <param name="number_of_trials" value="1" type="int" />
+  <param name="trial_length" value="10000" type="double" />
+  <param name="joint_state_topic" value="robot/joint_states" type="str" />
+  <param name="update_frequency" value="500.0" type="double" />
+  <param name="samples" value="1250" type="int" />
+  <param name="trajectory_frequency" value="0.4" type="double" />
+  <param name="positions_file_name" value="$(find neuromechanics_control)/trajectory_data_vertical_circle/vertical_circle_position_right_arm_2-5s.txt" type="str" />
+  <param name="velocities_file_name" value="$(find neuromechanics_control)/trajectory_data_vertical_circle/vertical_circle_velocity_right_arm_2-5s.txt" type="str" />
+    <rosparam param="joint_list">
+      [right_s0,right_s1,right_e0,right_e1,right_w0,right_w1,right_w2]
+    </rosparam>
+    <rosparam param="max_pos_amplitude">
+      [1.7,1.04, 3.05, 2.61, 3.05, 2.09, 3.05]
+    </rosparam>
+    <rosparam param="min_pos_amplitude">
+      [-1.7, -2.14, -3.05, -0.05, -3.05, -1.57, -3.05]
+    </rosparam>
+    <rosparam param="max_vel_amplitude">
+      [2.0, 2.0, 2.0, 2.0, 4.0, 4.0, 4.0]
+    </rosparam>
+    <rosparam param="min_vel_amplitude">
+      [-2.0, -2.0, -2.0, -2.0, -4.0, -4.0, -4.0]
+    </rosparam>
+    <param name="desired_position_topic" value="edlut_ros/desired_position/compact" type="str" />
+    <param name="desired_velocity_topic" value="edlut_ros/desired_velocity/compact" type="str" />
+    <param name="control_topic" value="edlut_ros/in_trial" type="str" />
+    <param name="joint_command_topic" value="robot/limb/right/joint_command" type="str" />
+  </node>
+
+
+<!-- BAXTER ARM STATE NODE
+This node avertises Baxter's right arm current state.
+Reads the data coming from Baxter's sensors and publishes the current position
+and velocity for every joint in the specified topics. -->
+<node machine="main_PC" pkg="neuromechanics_control" name="baxter_arm_state" type="baxter_arm_state_node_sync" output="screen" clear_params="true">
+  <param name="input_topic" value="/robot/joint_states" type="str" />
+  <rosparam param="joint_list">
+    [right_s0,right_s1,right_e0,right_e1,right_w0,right_w1,right_w2]
+  </rosparam>
+  <param name="current_position_topic" value="edlut_ros/current_position/compact" type="str" />
+  <param name="current_velocity_topic" value="edlut_ros/current_velocity/compact" type="str" />
+  <param name="clock_topic" value="edlut_ros/clockConfirmation" type="str" />
+  <param name="sampling_frequency" value="500.0" type="double" />
+  <param name="checking_frequency" value="1000.0" type="double" />
+</node>
+
+<!-- COCONTRACTION PROFILE PUBLISHER
+This node advertises the cocontraction profile (e.g., x1, x2, x3...) to be
+applied by the Ekeberg muscle model -->
+<node machine="main_PC" pkg="neuromechanics_control" name="cocontraction_profile" type="cocontraction_profile_publisher.py" output="screen" clear_params="true">
+  <param name="output_topic" value="cocontraction_profile" type="str" />
+  <param name="cocontraction" value="10.0" type="double" />
+  <rosparam param="joint_list">
+    [all_joints]
+  </rosparam>
+  <param name="sampling_frequency" value="500.0" type="double" />
+  <param name="clock_topic" value="edlut_ros/clockConfirmation" type="str" />
+</node>
+
+<!-- ANALOGUE DELAY NODES
+The following nodes add a delay to the specified topic (sensorimotor delay).
+The current states need to be compared with the desired states generated 50 ms
+before (due to the sensorimotor delays). Hence, the difference between the delay
+of the desired signals and the one of the current signals.-->
+<node machine="main_PC" pkg="neuromechanics_control" name="delay_analog_node_desired_velocity" type="delay_analog_node" output="screen" clear_params="true">
+  <param name="input_topic" value="edlut_ros/desired_velocity/compact" type="str" />
+  <param name="output_topic" value="edlut_ros/delayed_desired_velocity/compact" type="str" />
+  <param name="delay" value="0.060" type="double" />
+</node>
+
+<node machine="main_PC" pkg="neuromechanics_control" name="delay_analog_node_desired_position" type="delay_analog_node" output="screen" clear_params="true">
+  <param name="input_topic" value="edlut_ros/desired_position/compact" type="str" />
+  <param name="output_topic" value="edlut_ros/delayed_desired_position/compact" type="str" />
+  <param name="delay" value="0.060" type="double" />
+</node>
+
+<node machine="main_PC" pkg="neuromechanics_control" name="delay_analog_node_current_velocity" type="delay_analog_node" output="screen" clear_params="true">
+  <param name="input_topic" value="edlut_ros/current_velocity/compact" type="str" />
+  <param name="output_topic" value="edlut_ros/delayed_current_velocity/compact" type="str" />
+  <param name="delay" value="0.010" type="double" />
+</node>
+
+<node machine="main_PC" pkg="neuromechanics_control" name="delay_analog_node_current_position" type="delay_analog_node" output="screen" clear_params="true">
+  <param name="input_topic" value="edlut_ros/current_position/compact" type="str" />
+  <param name="output_topic" value="edlut_ros/delayed_current_position/compact" type="str" />
+  <param name="delay" value="0.010" type="double" />
+</node>
+
+
+<!-- MUSCLE DYNAMICS -->
+<node machine="main_PC" pkg="neuromechanics_control" name="muscles" type="muscle_dynamics_withPD_ablation" output="screen">
+  <rosparam param="PD_kp_gain">
+     [7.5, 8.0, 1.0, 6.0, 1.0, 4.0, 0.0]  <!-- PD v1 -->
+    <!-- [8.0, 9.0, 1.0, 8.0, 1.5, 8.0, 0.0] -->  <!-- PD v2 -->
+  </rosparam>
+  <rosparam param="PD_kd_gain">
+     [0.01, 0.01, 0.01, 0.005, 0.005, 0.005, 0.0]  <!-- PD v1 -->
+    <!-- [0.05, 0.05, 0.05, 0.025, 0.025, 0.025, 0.0] --> <!-- PD v2 -->
+  </rosparam>
+  <param name="PD_min_output" value="-1.0" type="double" />
+  <param name="PD_max_output" value="1.0" type="double" />
+  <param name="current_position_topic" value="edlut_ros/current_position/compact" type="str" />
+  <param name="current_velocity_topic" value="edlut_ros/current_velocity/compact" type="str" />
+  <param name="desired_position_topic" value="edlut_ros/desired_position/compact" type="str" />
+  <param name="desired_velocity_topic" value="edlut_ros/desired_velocity/compact" type="str" />
+  <param name="output_torque_topic" value="edlut_ros/motor_command/torque_muscles" type="str" />
+  <param name="output_agonist_antagonist_control_topic" value="edlut_ros/agonist_antagonist_control" type="str" />
+  <param name="output_reflex_contribution_topic" value="edlut_ros/reflex_contribution" type="str" />
+  <param name="output_elastic_passive_control_topic" value="edlut_ros/elastic_passive_control" type="str" />
+  <param name="output_viscous_passive_control_topic" value="edlut_ros/viscous_passive_control" type="str" />
+  <rosparam param="joint_list">
+    [right_s0,right_s1,right_e0,right_e1,right_w0,right_w1,right_w2]
+  </rosparam>
+  <rosparam param="muscle_gain">
+    [35.0, 45.0, 35.0, 35.0, 10.5, 10.5, 0.0]
+    <!-- [40.0, 53.0, 40.0, 40.0, 15.0, 15.0, 0.0] -->
+  </rosparam>
+  <rosparam param="muscle_gain_reflex">
+    <!-- [35.0, 45.0, 35.0, 35.0, 10.5, 10.5, 0.0] -->
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  </rosparam>
+  <rosparam param="muscle_stiffness_gain">
+    [1.0, 1.0, 1.0, 1.0, 0.3, 0.3, 0.0]
+    <!-- [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] -->
+  </rosparam>
+  <rosparam param="muscle_tonic_stiffness">
+    [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 0.0]
+  </rosparam>
+  <rosparam param="damping">
+    [-4.0, -4.0, -1.0, -3.0, -1.0, -1.0, 0.0]
+    <!-- [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] -->
+  </rosparam>
+  <rosparam param="cocontraction">
+    [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.0]
+    <!-- C value = x1 baseline -->
+  </rosparam>
+  <param name="cocontraction_input_topic" value="cocontraction_profile" type="str" />
+  <rosparam param="resting_position">
+    [0.0, 0.2155, 0.0, 1.3349, 0.0, 0.0, -3.0430]
+  </rosparam>
+  <rosparam param="max_torque">
+    [50.0, 50.0, 50.0, 50.0, 15.0, 15.0, 15.0]
+  </rosparam>
+  <!-- -->
+  <rosparam param="max_deviation">
+    [0.35, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35]
+  </rosparam>
+  <!-- 10% of the joint range of motion
+  <rosparam param="max_deviation">
+    [0.34, 0.32, 0.61, 0.27, 0.61, 0.37, 0.61]
+  </rosparam> -->
+  <param name="sampling_frequency" value="500.0" type="double" />
+  <param name="clock_topic" value="edlut_ros/clockConfirmation" type="str" />
+  <param name="node_name" value="ekeberg_muscles" type="str" />
+  <param name="delay" value="0.05" type="double" />
+</node>
+
+
+<!-- TORQUE PD SUPERVISOR
+This nodes supervises that the joints are kept within a specified working area
+(min_position - max_position values). If a joint is outside of that working are,
+a PD controller acts to bring it back to the working area. The Kp a Kd factors
+of the controller are specified for each joint.
+-->
+<node machine="main_PC" pkg="neuromechanics_control" name="raspberry_torque_pd_supervisor" type="pd_supervisor_node" output="screen">
+  <param name="current_position_topic" value="edlut_ros/current_position/compact" type="str" />
+  <param name="current_velocity_topic" value="edlut_ros/current_velocity/compact" type="str" />
+  <param name="output_topic" value="edlut_ros/motor_command/torque_pd_supervisor" type="str" />
+  <param name="update_frequency" value="500.0" type="double" />
+  <rosparam param="joint_list">
+    [right_s0,right_s1,right_e0,right_e1,right_w0,right_w1,right_w2]
+  </rosparam>
+  <rosparam param="kp">
+    [20.0,20.0,20.0,20.0,3.0,3.0,0.0]
+    <!-- [0.0,0.0,0.0,0.0,0.0,0.0,0.0] -->
+  </rosparam>
+  <rosparam param="kd">
+    [5.0,5.0,5.0,5.0,1.0,1.0,0.0]
+    <!-- [0.0,0.0,0.0,0.0,0.0,0.0,0.0] -->
+  </rosparam>
+  <rosparam param="min_position_list">
+    <!-- [0.545, -0.423, -0.010, 1.006, -0.036, 0.414] -->
+    [-1.5, -1.95, -2.85, 0.15, -2.85, -1.37]
+  </rosparam>
+  <rosparam param="max_position_list">
+    <!-- [0.949, -0.219, 0.022, 1.579, 0.018, 0.783] -->
+    [1.5, 0.85, 2.85, 2.42, 2.85, 1.89]
+  </rosparam>
+</node>
+
+<!-- TORQUE ADDITION NODE
+This node adds the cerebellar torque and PD supervisor torque (when present).
+-->
+<node machine="main_PC" pkg="neuromechanics_control" name="final_torque_node" type="torque_addition_node" output="screen" clear_params="true">
+  <param name="input_topic_torque_1" value="edlut_ros/motor_command/torque_pd_supervisor" type="str" />
+  <param name="input_topic_torque_2" value="edlut_ros/motor_command/torque_muscles" type="str" />
+  <param name="output_topic" value="edlut_ros/motor_command/torque_final" type="str" />
+  <param name="sampling_frequency" value="500.0" type="double" />
+  <rosparam param="joint_list">
+    [right_s0,right_s1,right_e0,right_e1,right_w0,right_w1,right_w2]
+  </rosparam>
+</node>
+
+<!-- TORQUE Baxter
+This node takes the addition of the cerebellar torque and the PD supervisor
+torque and sends the motor command to Baxter robot, finally executing movement.
+-->
+<node machine="main_PC" pkg="neuromechanics_control" name="torque_command_node" type="baxter_torque_command_node" output="screen">
+  # Define private parameters for the spike decoder
+  <param name="input_topic" value="edlut_ros/motor_command/torque_final" type="str" />
+  <param name="output_topic" value="robot/limb/right/joint_command" type="str" />
+  <rosparam param="joint_list">
+    [right_s0,right_s1,right_e0,right_e1,right_w0,right_w1,right_w2]
+  </rosparam>
+  <param name="limb" value="right" type="string" />
+  <param name="control_topic" value="edlut_ros/in_trial" type="str" />
+  <param name="sampling_frequency" value="500.0" type="double" />
+  <param name="disable_gravity_compensation" value="true" type="bool" />
+  <param name="gravity_topic" value="robot/limb/right/suppress_gravity_compensation" type="str" />
+</node>
+
+<!--ENDPOINT PUBLISHER
+This node publishes the position of the end-effector for monitoring purposes. -->
+<node machine="main_PC" name="endpoint_publisher" pkg="neuromechanics_control" type="xyz_publisher.py" output="screen">
+  <param name="limb" value="right" type="str" />
+  <param name="rate" value="500.0" type="double" />
+  <param name="output_topic" value="/edlut_ros/endpoint_position/compact" type="str" />
+</node>
+
+
+<!-- TORQUE REMAPING
+This node remaps the torque commands published in robot/limb/right/joint_command to a new topic including the time stamp
+of the message. It is used to record data for the Inverse Model. (Otherwise the recorded torque commands have no time stamp
+to cross references with other data) -->
+<node machine="main_PC" pkg="neuromechanics_control" name="torque_remaping" type="torque_command_remaping" output="screen" clear_params="true">
+  <param name="input_topic" value="robot/limb/right/joint_command" type="str" />
+  <param name="output_topic" value="torque_command" type="str" />
+</node>
+
+
+<!-- ############################  PLOT NODES  ############################ -->
+<!-- To display the graphs, run the rqt_reconfigure plugin and select them
+from the menu.
+ >> rosrun rqt_reconfigure rqt_reconfigure
+-->
+
+<!-- POSITION MAE
+This node creates an animated graph of the position Mean Absolute Error (MAE)
+per trial (trial duration specified). The MAE represented is the mean of the
+specified joints. If only one joint is specified, that joint's MAE is plotted. -->
+<node machine="main_PC" pkg="neuromechanics_control" name="PMAE" type="MAE_Plot_1s.py" output="screen">
+  <param name="current_topic" value="edlut_ros/delayed_current_position/compact" type="str" />
+  <param name="desired_topic" value="edlut_ros/delayed_desired_position/compact" type="str" />
+  <param name="duration_trial" value="2.5" type="double" />
+  <rosparam param="joint_list">
+    [right_s0,right_s1,right_e0,right_e1,right_w0,right_w1]
+  </rosparam>
+  <param name="figure_name" value="Position MAE" type="str" />
+  <param name="refresh_rate" value="1.0" type="double" />
+</node>
+
+
+<!-- PLOT TOPICS -->
+<node machine="main_PC" pkg="rqt_plot" name="plot_topics_w1" type="rqt_plot"
+      args="edlut_ros/delayed_desired_position/compact/data[0]
+      edlut_ros/delayed_current_position/compact/data[0]
+      edlut_ros/delayed_desired_position/compact/data[1]
+      edlut_ros/delayed_current_position/compact/data[1]
+      edlut_ros/delayed_desired_position/compact/data[2]
+      edlut_ros/delayed_current_position/compact/data[2]
+      edlut_ros/delayed_desired_position/compact/data[3]
+      edlut_ros/delayed_current_position/compact/data[3]
+      edlut_ros/delayed_desired_position/compact/data[4]
+      edlut_ros/delayed_current_position/compact/data[4]
+      edlut_ros/delayed_desired_position/compact/data[5]
+      edlut_ros/delayed_current_position/compact/data[5]
+      "/>
+
+
+<!-- RECORD TOPICS TO ROSBAG FILE -->
+ <node machine="main_PC" pkg="rosbag" type="record" name="rosbag_record"
+       args="record -o $(find neuromechanics_control)/rosbags/PD_ablation_reflex_vCircle_2-5s
+       /edlut_ros/delayed_current_position/compact
+       /edlut_ros/delayed_current_velocity/compact
+       /edlut_ros/delayed_desired_position/compact
+       /edlut_ros/delayed_desired_velocity/compact
+       /torque_command
+       /edlut_ros/motor_command/torque_muscles
+       /cocontraction_profile
+       /edlut_ros/endpoint_position/compact
+       /edlut_ros/agonist_antagonist_control
+       /edlut_ros/reflex_contribution
+       /edlut_ros/elastic_passive_control
+       /edlut_ros/viscous_passive_control
+       /robot/limb/right/gravity_compensation_torques"
+       />
+
+
+
+
+</launch>

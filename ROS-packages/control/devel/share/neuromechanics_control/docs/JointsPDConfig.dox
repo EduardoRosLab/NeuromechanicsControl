@@ -1,0 +1,26 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~s0_kp" : \b [double] s0 - Joint Kp min: 0.0, default: 45.0, max: 1000.0
+- \b "~s0_kd" : \b [double] s0 - Joint Kd min: 0.0, default: 15.0, max: 50.0
+- \b "~s0_max_torque" : \b [double] s0 - Max torque. min: 0.0, default: 12.0, max: 50.0
+- \b "~s1_kp" : \b [double] s1 - Joint Kp min: 0.0, default: 50.0, max: 1000.0
+- \b "~s1_kd" : \b [double] s1 - Joint Kd min: 0.0, default: 5.0, max: 50.0
+- \b "~s1_max_torque" : \b [double] s1 - Max torque. min: 0.0, default: 19.5, max: 50.0
+- \b "~e0_kp" : \b [double] e0 - Joint Kp min: 0.0, default: 17.0, max: 1000.0
+- \b "~e0_kd" : \b [double] e0 - Joint Kd min: 0.0, default: 3.0, max: 50.0
+- \b "~e0_max_torque" : \b [double] e0 - Max torque. min: 0.0, default: 3.75, max: 50.0
+- \b "~e1_kp" : \b [double] e1 - Joint Kp min: 0.0, default: 50.0, max: 1000.0
+- \b "~e1_kd" : \b [double] e1 - Joint Kd min: 0.0, default: 4.0, max: 50.0
+- \b "~e1_max_torque" : \b [double] e1 - Max torque. min: 0.0, default: 10.5, max: 50.0
+- \b "~w0_kp" : \b [double] w0 - Joint Kp min: 0.0, default: 22.0, max: 300.0
+- \b "~w0_kd" : \b [double] w0 - Joint Kd min: 0.0, default: 2.5, max: 15.0
+- \b "~w0_max_torque" : \b [double] w0 - Max torque. min: 0.0, default: 3.0, max: 15.0
+- \b "~w1_kp" : \b [double] w1 - Joint Kp min: 0.0, default: 27.0, max: 300.0
+- \b "~w1_kd" : \b [double] w1 - Joint Kd min: 0.0, default: 3.0, max: 15.0
+- \b "~w1_max_torque" : \b [double] w1 - Max torque. min: 0.0, default: 3.75, max: 15.0
+- \b "~w2_kp" : \b [double] w2 - Joint Kp min: 0.0, default: 0.0, max: 300.0
+- \b "~w2_kd" : \b [double] w2 - Joint Kd min: 0.0, default: 0.0, max: 15.0
+- \b "~w2_max_torque" : \b [double] w2 - Max torque. min: 0.0, default: 0.0, max: 15.0
+

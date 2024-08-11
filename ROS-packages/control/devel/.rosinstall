@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/baxter/git_repos/NeuromechanicsControl/ROS-packages/control/devel/setup.sh

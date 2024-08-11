@@ -34,19 +34,26 @@ from baxter_core_msgs.msg import (
 
 class Robot_Enabler(object):
 
-	def __init__(self):
+	def __init__(self, baxter_arm):
 		# Publisher to advertise once the robot is enabled
 		self.pub = rospy.Publisher("/robot_enabled", Bool, queue_size=10, latch=True)
 		self._pub_rate = rospy.Publisher('robot/joint_state_publish_rate', UInt16, queue_size=10)
 		# Publisher to put baxter's left arm in 0 position
-		self.pub_position = rospy.Publisher('robot/limb/left/joint_command', JointCommand, queue_size = 10)
+		if baxter_arm == 'left':
+			self.pub_position = rospy.Publisher('robot/limb/left/joint_command', JointCommand, queue_size = 10)
+		if baxter_arm == 'right':
+			self.pub_position = rospy.Publisher('robot/limb/right/joint_command', JointCommand, queue_size = 10)
+
 		# Baxter interface to have access to the state of the robot
 		self.rs = baxter_interface.RobotEnable(CHECK_VERSION)
 		# Baxter limb to have access to the robot's position
-		self.limb = baxter_interface.Limb('left')
+		self.limb = baxter_interface.Limb(baxter_arm)
 
 		# Dictionary to store the robot's left arm position
-		self.angles = {'left_s0': 100.0, 'left_s1': 100.0, 'left_e0': 100.0, 'left_e1': 100.0, 'left_w0': 100.0, 'left_w1': 100.0, 'left_w2': 100.0}
+		if baxter_arm == 'left':
+			self.angles = {'left_s0': 100.0, 'left_s1': 100.0, 'left_e0': 100.0, 'left_e1': 100.0, 'left_w0': 100.0, 'left_w1': 100.0, 'left_w2': 100.0}
+		if baxter_arm == 'right':
+			self.angles = {'right_s0': 100.0, 'right_s1': 100.0, 'right_e0': 100.0, 'right_e1': 100.0, 'right_w0': 100.0, 'right_w1': 100.0, 'right_w2': 100.0}
 
 		# Variable to store baxter state
 		self.enabled = False
@@ -54,7 +61,10 @@ class Robot_Enabler(object):
 		# Message components to put arm in 0 position (mode 1 = position control mode)
 		self.mode = 1
 		self.position = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-		self.names = ['left_s0','left_s1', 'left_e0', 'left_e1', 'left_w0', 'left_w1', 'left_w2']
+		if baxter_arm == 'left':
+			self.names = ['left_s0','left_s1', 'left_e0', 'left_e1', 'left_w0', 'left_w1', 'left_w2']
+		if baxter_arm == 'right':
+			self.names = ['right_s0','right_s1', 'right_e0', 'right_e1', 'right_w0', 'right_w1', 'right_w2']
 
 		self.torque = []
 
@@ -97,6 +107,7 @@ class Robot_Enabler(object):
 		enabled = True
 		published = False
 
+		# Set maximum speed
 		self.limb.set_joint_position_speed(1.0)
 
 		#Set Baxter's joint state publish rate to 500 Hz
@@ -108,6 +119,10 @@ class Robot_Enabler(object):
 		# 		self.pub.publish(enabled)
 		# 		published = True
 		# 	r.sleep()
+
+	def set_speed(self):
+		self.limb.set_joint_position_speed(1.0)
+
 
 	# Function to send zero torque to Baxter
 	def zero_torque(self):
@@ -126,7 +141,8 @@ class Robot_Enabler(object):
 
 def main():
 	rospy.init_node('robot_enabler', anonymous=True, disable_signals = True)
-	enabler = Robot_Enabler()
+	baxter_arm = rospy.get_param("~limb")
+	enabler = Robot_Enabler(baxter_arm)
 	r = rospy.Rate(10) # 10hz
 
 	use_sim_time = rospy.get_param("/use_sim_time")
@@ -138,7 +154,10 @@ def main():
 			time = rospy.get_rostime().to_sec()
 			r.sleep()
 	enabler.robot_enabler()
-	enabler.zero_torque()
+	enabler.set_speed()
+	while not rospy.is_shutdown():
+			enabler.set_speed()
+
 	rospy.signal_shutdown("enabling done")
 
 if __name__ == '__main__':

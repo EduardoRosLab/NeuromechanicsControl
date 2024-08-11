@@ -1,0 +1,11 @@
+\subsubsection usage Usage
+\verbatim
+<node name="neuromechanics_control" pkg="neuromechanics_control" type="neuromechanics_control">
+  <param name="Time_Window" type="double" value="1.0" />
+  <param name="Min_Neuron" type="int" value="0" />
+  <param name="Max_Neuron" type="int" value="0" />
+  <param name="Stop" type="bool" value="False" />
+  <param name="Display" type="bool" value="False" />
+</node>
+\endverbatim
+

@@ -36,6 +36,7 @@ If runnning in real time the synchronizer node will shutdown after the robot has
 It enables the robot. Once done it publishes a message advertising
 the robot is ready and then the node is shutdown. -->
 <node machine="main_PC" pkg="neuromechanics_control" name="robot_enabler" type="robot_enabler_node.py" output="screen">
+  <param name="limb" value="right" type="str" />
 </node>
 
 
@@ -86,7 +87,7 @@ EIGHT-LIKE TRAJECTORY  -->
   </node>
 
 
-<!-- BAXTER ARM STATE NODE DELAY SIMULATION
+<!-- BAXTER ARM STATE NODE
 This node avertises Baxter's right arm current state.
 Reads the data coming from Baxter's sensors and publishes the current position
 and velocity for every joint in the specified topics. -->

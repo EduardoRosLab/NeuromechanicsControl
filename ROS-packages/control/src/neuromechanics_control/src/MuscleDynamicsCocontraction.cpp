@@ -227,11 +227,6 @@ void MuscleDynamicsCocontraction::UpdateTorque(ros::Time current_time){
 	// // // // // // // // // // // // //
 	// // // // // // // // // // // // //
 	for (unsigned int i=0; i<this->joint_list.size(); ++i){
-		// this->output_torque[i] = this->beta[i]*this->gamma[i]*(this->resting_position[i] - this->current_position[i]) + this->beta[i]*(this->agonist_signal[i] + this->antagonist_signal[i] + this->cocontraction[i])*(this->desired_position[i] - this->current_position[i]) + this->delta[i]*this->current_velocity[i];
-		// this->output_torque[i] = this->beta[i]*this->gamma[i]*(this->resting_position[i] - this->current_position[i]) + this->alpha[i]*(this->agonist_signal[i] + this->antagonist_signal[i] + this->cocontraction[i])*(this->desired_position[i] - this->current_position[i]) + this->delta[i]*this->current_velocity[i];
-
-		// New model - spinal reflex added to Ekeberg model
-		// this->output_torque[i] = this->alpha[i]*(this->our_equation*(this->agonist_signal[i] - this->antagonist_signal[i]) + this->reflex_gain[i]*(this->desired_position[i] - this->current_position[i])) + this->beta[i]*(this->agonist_signal[i] + this->antagonist_signal[i] + 2*this->cocontraction[i] + this->gamma[i])*(this->resting_position[i] - this->current_position[i]) + this->delta[i]*this->current_velocity[i];
 
 		this->agonist_antagonist_control[i] = this->alpha[i]*(this->agonist_signal[i] - this->antagonist_signal[i]);
 		this->reflex_contribution[i] = this->reflex_gain[i]*(this->desired_position[i] - this->current_position[i]);

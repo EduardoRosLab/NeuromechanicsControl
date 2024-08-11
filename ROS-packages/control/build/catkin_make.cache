@@ -1,0 +1,2 @@
+neuromechanics_control
+-DCATKIN_DEVEL_PREFIX=/home/baxter/git_repos/NeuromechanicsControl/ROS-packages/control/devel -DCMAKE_INSTALL_PREFIX=/home/baxter/git_repos/NeuromechanicsControl/ROS-packages/control/install -G Unix Makefiles

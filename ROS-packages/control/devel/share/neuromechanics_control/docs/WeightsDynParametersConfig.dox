@@ -1,0 +1,7 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~Time" : \b [int] Time min: -2147483648, default: 10, max: 2147483647
+- \b "~Display" : \b [bool] Display graph min: False, default: False, max: True
+

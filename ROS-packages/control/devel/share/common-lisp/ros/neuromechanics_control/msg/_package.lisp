@@ -1,0 +1,21 @@
+(cl:defpackage neuromechanics_control-msg
+  (:use )
+  (:export
+   "<ANALOG>"
+   "ANALOG"
+   "<ANALOGCOMPACT>"
+   "ANALOGCOMPACT"
+   "<ANALOGCOMPACTDELAY>"
+   "ANALOGCOMPACTDELAY"
+   "<ANALOGCOMPACT_AGONISTANTAGONIST>"
+   "ANALOGCOMPACT_AGONISTANTAGONIST"
+   "<LEARNINGSTATE>"
+   "LEARNINGSTATE"
+   "<SPIKE>"
+   "SPIKE"
+   "<SPIKE_GROUP>"
+   "SPIKE_GROUP"
+   "<TIME>"
+   "TIME"
+  ))
+

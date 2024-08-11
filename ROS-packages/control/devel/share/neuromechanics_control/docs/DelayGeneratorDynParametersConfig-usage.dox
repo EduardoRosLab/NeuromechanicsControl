@@ -1,0 +1,9 @@
+\subsubsection usage Usage
+\verbatim
+<node name="neuromechanics_control" pkg="neuromechanics_control" type="neuromechanics_control">
+  <param name="min_delay" type="double" value="0.0" />
+  <param name="max_delay" type="double" value="0.0" />
+  <param name="fixed_delay" type="double" value="0.0" />
+</node>
+\endverbatim
+

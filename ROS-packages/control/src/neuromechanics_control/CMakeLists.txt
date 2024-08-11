@@ -196,6 +196,7 @@ add_library(spike_ros_interface
   src/ROSPoissonGenerator.cpp
   src/ROSErrorCalculatorCompact.cpp
   src/ROSTorqueCalculatorAddition.cpp
+  src/ROSCocontractionModulation.cpp
 )
 
 add_library(baxter_interface
@@ -205,6 +206,9 @@ add_library(baxter_interface
   src/SynchronizerDynParams.cpp
   src/MuscleDynamicsCocontraction.cpp
   src/MuscleDynamicsCocontraction_WithPD.cpp
+  src/MuscleDynamicsCocontraction_DirectPD.cpp
+  src/MuscleDynamicsCocontraction_WithPD_Ablation.cpp
+  src/MuscleDynamicsActiveCocontraction.cpp
 )
 
 #add_library(baxter_gazebo_ros_control
@@ -235,6 +239,10 @@ add_executable(torque_command_remaping src/torque_command_remaping.cpp)
 add_executable(median_filter_node_agonist_antagonist src/median_filter_node_agonist_antagonist.cpp)
 add_executable(muscle_dynamics src/muscle_dynamics.cpp)
 add_executable(muscle_dynamics_withPD src/muscle_dynamics_withPD.cpp)
+add_executable(muscle_dynamics_directPD src/muscle_dynamics_directPD.cpp)
+add_executable(muscle_dynamics_withPD_ablation src/muscle_dynamics_withPD_ablation.cpp)
+add_executable(cocontraction_modulation src/cocontraction_modulation.cpp)
+add_executable(muscle_dynamics_active_cocontraction src/muscle_dynamics_active_cocontraction.cpp)
 
 #add_executable(SynchronizerDynParams src/SynchronizerDynParams.cpp)
 
@@ -270,6 +278,10 @@ add_dependencies(baxter_position_command_node neuromechanics_control_generate_me
 add_dependencies(median_filter_node_agonist_antagonist neuromechanics_control_generate_messages_cpp)
 add_dependencies(muscle_dynamics neuromechanics_control_generate_messages_cpp)
 add_dependencies(muscle_dynamics_withPD neuromechanics_control_generate_messages_cpp)
+add_dependencies(muscle_dynamics_directPD edlut_ros_osim_generate_messages_cpp)
+add_dependencies(muscle_dynamics_withPD_ablation edlut_ros_osim_generate_messages_cpp)
+add_dependencies(cocontraction_modulation edlut_ros_osim_generate_messages_cpp)
+add_dependencies(muscle_dynamics_active_cocontraction edlut_ros_osim_generate_messages_cpp)
 
 
 
@@ -383,6 +395,27 @@ target_link_libraries(muscle_dynamics
 )
 
 target_link_libraries(muscle_dynamics_withPD
+  baxter_interface
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(muscle_dynamics_directPD
+  baxter_interface
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(muscle_dynamics_withPD_ablation
+  baxter_interface
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(cocontraction_modulation
+  ${catkin_LIBRARIES}
+  spike_ros_interface
+  ${Boost_LIBRARIES}
+)
+
+target_link_libraries(muscle_dynamics_active_cocontraction
   baxter_interface
   ${catkin_LIBRARIES}
 )

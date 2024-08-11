@@ -1,0 +1,7 @@
+\subsubsection usage Usage
+\verbatim
+<node name="neuromechanics_control" pkg="neuromechanics_control" type="neuromechanics_control">
+  <param name="cocontraction" type="double" value="1.0" />
+</node>
+\endverbatim
+

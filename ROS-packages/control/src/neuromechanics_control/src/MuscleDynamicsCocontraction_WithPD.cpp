@@ -233,11 +233,6 @@ void MuscleDynamicsCocontraction_WithPD::UpdateTorque(ros::Time current_time){
 	// // // // // // // // // // // // //
 	// // // // // // // // // // // // //
 	for (unsigned int i=0; i<this->joint_list.size(); ++i){
-		// this->output_torque[i] = this->beta[i]*this->gamma[i]*(this->resting_position[i] - this->current_position[i]) + this->beta[i]*(this->agonist_signal[i] + this->antagonist_signal[i] + this->cocontraction[i])*(this->desired_position[i] - this->current_position[i]) + this->delta[i]*this->current_velocity[i];
-		// this->output_torque[i] = this->beta[i]*this->gamma[i]*(this->resting_position[i] - this->current_position[i]) + this->alpha[i]*(this->agonist_signal[i] + this->antagonist_signal[i] + this->cocontraction[i])*(this->desired_position[i] - this->current_position[i]) + this->delta[i]*this->current_velocity[i];
-
-		// New model - spinal reflex added to Ekeberg model
-		// this->output_torque[i] = this->alpha[i]*(this->our_equation*(this->agonist_signal[i] - this->antagonist_signal[i]) + this->reflex_gain[i]*(this->desired_position[i] - this->current_position[i])) + this->beta[i]*(this->agonist_signal[i] + this->antagonist_signal[i] + 2*this->cocontraction[i] + this->gamma[i])*(this->resting_position[i] - this->current_position[i]) + this->delta[i]*this->current_velocity[i];
 
 		// PD control for the active component
 		this->pd_output[i] = this->kp_gain[i]*(this->desired_position[i] - this->current_position[i]) + this->kd_gain[i]*(this->desired_velocity[i] - this->current_velocity[i]);
@@ -274,8 +269,6 @@ void MuscleDynamicsCocontraction_WithPD::UpdateTorque(ros::Time current_time){
 		else if (this->output_torque[i] < -1.0*this->max_torque[i]){
 			this->output_torque[i] = -1.0*this->max_torque[i];
 		}
-
-		// this->output_torque[i] = this->desired_position[5] - 0.58;
 
 	}
 	 // // // // // // // // // // // // //
