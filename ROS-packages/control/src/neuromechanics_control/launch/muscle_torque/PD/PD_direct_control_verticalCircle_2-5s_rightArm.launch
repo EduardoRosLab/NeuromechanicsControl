@@ -14,22 +14,7 @@
 <param name="wireless_simulation" value="false" type="bool" />
 <param name="master_clock_topic" value="/clock_sync" type="str" />
 
-<!-- Launch Baxter Gazebo simulator
-  <include file="$(find gazebo_plugin)/launch/baxter_world_sync.launch">
-  </include>
--->
-<!-- SYNCHRONIZER NODE
-When using simulation time it synchronizes all the other nodes so they all run at the sime time stamps.
-If runnning in real time the synchronizer node will shutdown after the robot has been enabled.
-  -Clock_topics: clock signals published by the other nodes for synchronization purposes
-  -Checking_frequency: rate (Hz) at which the synchronizer checks if the other nodes have finished the current time step
-  -Step_time: size (seconds) of every simulated time step -->
-<node machine="main_PC" pkg="neuromechanics_control" name="synchronizer_node" type="synchronizer_node" output="screen">
-  <param name="clock_topic" value="edlut_ros/clockConfirmation" type="str" />
-  <param name="number_of_nodes" value="8" type="int" />
-  <param name="checking_frequency" value="10000.0" type="double" />
-  <param name="step_time" value="0.002" type="double" />
-</node>
+
 
 <!-- ROBOT ENABLER NODE
 It enables the robot. Once done it publishes a message advertising
@@ -153,8 +138,8 @@ of the desired signals and the one of the current signals.-->
     <!-- [132.0, 207.0, 53.0, 197.0, 30.0, 85.0, 0.0] -->  <!-- PD v3 -->
   </rosparam>
   <rosparam param="PD_kd_gain">
-     [18.0, 10.8, 2.7, 4.05, 2.223, 2.7, 0.0] <!-- PD v1 ; 10% reduction -->
-     <!-- [20.0, 12.0, 3.0, 4.5, 2.47, 3.0, 0.0] -->  <!-- PD v2 & v3 -->
+    [18.0, 10.8, 2.7, 4.05, 2.223, 2.7, 0.0]  <!-- PD v1 ; 10% reduction -->
+    <!-- [20.0, 12.0, 3.0, 4.5, 2.47, 3.0, 0.0] -->  <!-- PD v2 & v3 -->
   </rosparam>
   <rosparam param="PD_min_output">
      [-50.0, -50.0, -50.0, -50.0, -15.0, -15.0, 0.0]

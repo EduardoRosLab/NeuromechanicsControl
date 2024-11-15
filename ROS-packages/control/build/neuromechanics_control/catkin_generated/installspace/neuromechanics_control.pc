@@ -1,8 +1,0 @@
-prefix=/home/baxter/git_repos/NeuromechanicsControl/ROS-packages/control/install
-
-Name: neuromechanics_control
-Description: Description of neuromechanics_control
-Version: 0.0.0
-Cflags: -I/home/baxter/git_repos/NeuromechanicsControl/ROS-packages/control/install/include
-Libs: -L/home/baxter/git_repos/NeuromechanicsControl/ROS-packages/control/install/lib 
-Requires: roscpp rospy std_msgs message_runtime baxter_core_msgs

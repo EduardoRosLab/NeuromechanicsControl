@@ -1,9 +1,0 @@
-\subsubsection usage Usage
-\verbatim
-<node name="neuromechanics_control" pkg="neuromechanics_control" type="neuromechanics_control">
-  <param name="Pause" type="bool" value="False" />
-  <param name="Stop_at_time_stamp" type="bool" value="False" />
-  <param name="Time_stamp" type="double" value="0.0" />
-</node>
-\endverbatim
-

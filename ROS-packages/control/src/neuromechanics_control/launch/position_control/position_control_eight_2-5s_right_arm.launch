@@ -12,19 +12,6 @@ factory-installed position control mode -->
 <param name="reference_time" value="0.0" type="double" />
 
 
-<!-- SYNCHRONIZER NODE
-When using simulation time, this node synchronizes all the other nodes so they all run at the sime time stamps.
-If runnning in real time the synchronizer node will shutdown after the robot has been enabled.
-  -Clock_topics: clock signals published by the other nodes for synchronization purposes
-  -Checking_frequency: rate (Hz) at which the synchronizer checks if the other nodes have finished the current time step
-  -Step_time: size (seconds) of every simulated time step -->
-<node pkg="neuromechanics_control" name="synchronizer_node" type="synchronizer_node" output="screen">
-  <rosparam param="clock_topics">
-    [clock_gazebo, edlut_ros/clock/arm_state]
-   </rosparam>
-  <param name="checking_frequency" value="10000.0" type="double" />
-  <param name="step_time" value="0.002" type="double" />
-</node>
 
 
 <!-- ROBOT ENABLER NODE
