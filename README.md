@@ -4,7 +4,7 @@ Cerebello-muscular torque control of a Baxter robot with variable cocontraction 
 The repository includes the EDLUT simulator, the ROS packages to perform a closed-loop cerebello-muscular torque control and the configuration files needed.
 
 
-###### Please, cite as:
+###### Work published in:
 Abadía, I., Bruel, A., Courtine, G., Ijspeert, A., Ros, E., & Luque, N. R. A neuromechanics solution for adjustable robot compliance and accuracy. Science Robotics
 ****
 
