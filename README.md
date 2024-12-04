@@ -5,7 +5,7 @@ The repository includes the EDLUT simulator, the ROS packages to perform a close
 
 
 ###### Work published in:
-Abadía, I., Bruel, A., Courtine, G., Ijspeert, A., Ros, E., & Luque, N. R. A neuromechanics solution for adjustable robot compliance and accuracy. Science Robotics
+Abadía, I., Bruel, A., Courtine, G., Ijspeert, A., Ros, E., & Luque, N. R (2025). A neuromechanics solution for adjustable robot compliance and accuracy. Science Robotics
 ****
 
 
