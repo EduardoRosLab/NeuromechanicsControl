@@ -106,4 +106,4 @@ You can use that generated file as the input synaptic weight file for EDLUT simu
 ```
     <param name="weight_file" value="output_weightXXX.dat" type="str" />
 ```
-* The experiment data is saved in a rosbag file at /NeuromechanicsControl/ROS-packages/control/src/neuromechanics_control/rosbags
+* The experiment data is saved in a rosbag file at /NeuromechanicsControl/ROS-packages/control/src/neuromechanics_control/rosbags/
